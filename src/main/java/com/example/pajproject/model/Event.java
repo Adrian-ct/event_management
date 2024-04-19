@@ -2,7 +2,6 @@ package com.example.pajproject.model;
 
 import jakarta.persistence.*;
 
-import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -29,7 +28,7 @@ public class Event {
 
     @Temporal(TemporalType.TIME)
     @Column(name = "start_time")
-    private Time startTime;
+    private Date startTime;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "end_date")
@@ -37,7 +36,7 @@ public class Event {
 
     @Temporal(TemporalType.TIME)
     @Column(name = "end_time")
-    private Time endTime;
+    private Date endTime;
 
     @Column(name = "country")
     private String country;
@@ -100,11 +99,11 @@ public class Event {
         this.startDate = startDate;
     }
 
-    public Time getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Time startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
@@ -116,11 +115,11 @@ public class Event {
         this.endDate = endDate;
     }
 
-    public Time getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Time endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 

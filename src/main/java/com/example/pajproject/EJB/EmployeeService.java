@@ -34,5 +34,9 @@ public class EmployeeService {
         }
     }
 
+    public Employee getEmployee(Long id) {
+        return em.find(Employee.class, id);
+    }
+
     // Additional methods for finding employees by ID, searching by criteria, etc.
 }

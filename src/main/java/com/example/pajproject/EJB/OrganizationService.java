@@ -35,5 +35,7 @@ public class OrganizationService {
         }
     }
 
-    // Additional methods for finding organizations by ID, searching by criteria, etc.
+    public Organization getOrganization(Long id) {
+        return em.find(Organization.class, id);
+    }
 }
