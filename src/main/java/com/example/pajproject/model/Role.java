@@ -15,3 +15,4 @@ public class Role {
 
     // Getters and Setters omitted for brevity
 }
+

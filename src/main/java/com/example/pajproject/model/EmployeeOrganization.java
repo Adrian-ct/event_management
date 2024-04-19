@@ -15,5 +15,20 @@ public class EmployeeOrganization {
     @ManyToOne
     @JoinColumn(name = "org_id")
     private Organization organization;
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 }
-//

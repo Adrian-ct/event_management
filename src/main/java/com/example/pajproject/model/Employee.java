@@ -1,7 +1,5 @@
 package com.example.pajproject.model;
 import jakarta.persistence.*;
-
-import javax.management.relation.Role;
 import java.util.Date;
 
 @Entity
