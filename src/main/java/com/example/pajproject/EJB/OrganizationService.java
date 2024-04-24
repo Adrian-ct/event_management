@@ -24,15 +24,20 @@ public class OrganizationService {
     }
 
     public Organization updateOrganization(Organization organization) {
-        em.merge(organization);
-        return organization;
+        Organization existingOrganization = em.find(Organization.class, organization.getId());
+        if (existingOrganization == null) {
+            return null;
+        }
+        return em.merge(organization);
     }
 
-    public void deleteOrganization(Long orgId) {
-        Organization organization = em.find(Organization.class, orgId);
-        if (organization != null) {
-            em.remove(organization);
+    public boolean deleteOrganization(Long id) {
+        Organization organization = em.find(Organization.class, id);
+        if (organization == null) {
+            return false;
         }
+        em.remove(organization);
+        return true;
     }
 
     public Organization getOrganization(Long id) {

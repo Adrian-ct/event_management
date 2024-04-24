@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("/organizations")
+@Path("/organization")
 public class OrganizationResource {
     @EJB
     private OrganizationService organizationService;
@@ -47,7 +47,13 @@ public class OrganizationResource {
     @DELETE
     @Path("/{id}")
     public Response deleteOrganization(@PathParam("id") Long id) {
-        organizationService.deleteOrganization(id);
-        return Response.ok().build();
+        boolean isDeleted = organizationService.deleteOrganization(id);
+        if (isDeleted) {
+            return Response.ok("Organization deleted successfully").build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Organization not found")
+                    .build();
+        }
     }
 }

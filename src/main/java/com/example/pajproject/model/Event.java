@@ -19,9 +19,6 @@ public class Event {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "short_description")
-    private String shortDescription;
-
     @Temporal(TemporalType.DATE)
     @Column(name = "start_date")
     private Date startDate;
@@ -81,14 +78,6 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
     }
 
     public Date getStartDate() {

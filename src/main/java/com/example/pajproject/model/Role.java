@@ -13,6 +13,16 @@ public class Role {
     @Column(name = "name", length = 100)
     private String name;
 
-    // Getters and Setters omitted for brevity
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 

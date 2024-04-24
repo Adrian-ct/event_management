@@ -22,5 +22,26 @@ public class RoleService {
         return em.find(Role.class, roleId);
     }
 
-    // Additional methods for creating, updating, and deleting roles (if needed)
+    public Role createRole(Role role) {
+        em.persist(role);
+        return role;
+    }
+
+    public Role updateRole(Role role) {
+        Role existingRole = em.find(Role.class, role.getId());
+        if (existingRole == null) {
+            return null;
+        }
+        existingRole.setName(role.getName());
+        return existingRole;
+    }
+
+    public boolean deleteRole(Long roleId) {
+        Role role = em.find(Role.class, roleId);
+        if (role == null) {
+            return false;
+        }
+        em.remove(role);
+        return true;
+    }
 }
