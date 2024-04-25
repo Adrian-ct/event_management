@@ -2,8 +2,10 @@ package com.example.pajproject;
 
 import com.example.pajproject.EJB.EventService;
 import com.example.pajproject.EJB.OrganizationService;
+import com.example.pajproject.EJB.StatusService;
 import com.example.pajproject.model.Event;
 import com.example.pajproject.model.Organization;
+import com.example.pajproject.model.Status;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -19,11 +21,18 @@ public class EventResource {
     @EJB
     private OrganizationService organizationService;
 
+    @EJB
+    private StatusService statusService;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEvent(Event event) {
         Organization organization = organizationService.getOrganization(event.getOrganizerId());
         event.setOrganizer(organization);
+
+        Status status = statusService.getStatus(event.getStatus().getId());
+        event.setStatus(status);
+
         Event createdEvent = eventService.createEvent(event);
         return Response.status(Response.Status.CREATED).entity(createdEvent).build();
     }
