@@ -6,6 +6,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -20,22 +21,30 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
+        Date now = new Date();
+        event.setCreatedAt(now);
+        event.setChangedAt(now);
         em.persist(event);
         return event;
     }
 
+    public Event getEvent(Long eventId) {
+        return em.find(Event.class, eventId);
+    }
+
     public Event updateEvent(Event event) {
+        event.setChangedAt(new Date());
         em.merge(event);
         return event;
     }
 
-    public void deleteEvent(Long eventId) {
+    public boolean deleteEvent(Long eventId) {
         Event event = em.find(Event.class, eventId);
         if (event != null) {
             em.remove(event);
+            return true;
         }
+        return false;
     }
-
-    // Additional methods for finding events by ID, searching by criteria, etc.
 }
 

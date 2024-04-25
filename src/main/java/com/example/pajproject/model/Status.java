@@ -10,7 +10,7 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 10)
+    @Column(name = "name", length = 30)
     private String name;
 
     @Column(name = "description", columnDefinition = "text")

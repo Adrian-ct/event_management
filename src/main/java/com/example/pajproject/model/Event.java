@@ -1,8 +1,10 @@
 package com.example.pajproject.model;
 
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.*;
-
 import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "event")
@@ -19,21 +21,24 @@ public class Event {
     @Column(name = "name")
     private String name;
 
-    @Temporal(TemporalType.DATE)
+    @Column(name = "description", columnDefinition = "text")
+    private String description;
+
+    @JsonbDateFormat("yyyy-MM-dd")
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
 
-    @Temporal(TemporalType.TIME)
+    @JsonbDateFormat("HH:mm")
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalTime startTime;
 
-    @Temporal(TemporalType.DATE)
+    @JsonbDateFormat("yyyy-MM-dd")
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
 
-    @Temporal(TemporalType.TIME)
+    @JsonbDateFormat("HH:mm")
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalTime endTime;
 
     @Column(name = "country")
     private String country;
@@ -80,36 +85,12 @@ public class Event {
         this.name = name;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
     public String getCountry() {
@@ -158,5 +139,41 @@ public class Event {
 
     public void setChangedAt(Date changedAt) {
         this.changedAt = changedAt;
+    }
+
+    public Long getOrganizerId() {
+        return organizer.getId();
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 }

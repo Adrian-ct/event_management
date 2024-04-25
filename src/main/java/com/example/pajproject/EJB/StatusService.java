@@ -18,6 +18,10 @@ public class StatusService {
         return em.createQuery("SELECT s FROM Status s", Status.class).getResultList();
     }
 
+    public Status getStatus(Long statusId) {
+        return em.find(Status.class, statusId);
+    }
+
     public Status createStatus(Status status) {
         em.persist(status);
         return status;
@@ -28,12 +32,12 @@ public class StatusService {
         return status;
     }
 
-    public void deleteStatus(Long statusId) {
+    public boolean deleteStatus(Long statusId) {
         Status status = em.find(Status.class, statusId);
         if (status != null) {
             em.remove(status);
+            return true;
         }
+        return false;
     }
-
-    // Additional methods for finding statuses by ID, searching by criteria, etc.
 }
