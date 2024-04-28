@@ -56,7 +56,21 @@ public class EventResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEvent(@PathParam("id") Long id, Event event) {
-        Event updatedEvent = eventService.updateEvent(event);
+        // Write in the console the id of the event
+        System.out.println("Event id: " + id);
+        Event existingEvent = eventService.getEvent(id);
+        if(existingEvent == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Event not found")
+                    .build();
+        }
+
+        if(event.getStatus() != null) {
+            Status status = statusService.getStatus(event.getStatus().getId());
+            existingEvent.setStatus(status);
+        }
+
+        Event updatedEvent = eventService.updateEvent(existingEvent);
         if (updatedEvent == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Event not found")
@@ -67,13 +81,13 @@ public class EventResource {
 
     @DELETE
     @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEvent(@PathParam("id") Long id) {
         boolean isDeleted = eventService.deleteEvent(id);
         if (isDeleted) {
-            return Response.ok("Event deleted successfully").build();
+            return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Event not found")
                     .build();
         }
     }
