@@ -38,5 +38,10 @@ public class EmployeeService {
         return em.find(Employee.class, id);
     }
 
-    // Additional methods for finding employees by ID, searching by criteria, etc.
+    public Employee getEmployeeByEmail(String email) {
+        List<Employee> employees = em.createQuery("SELECT e FROM Employee e WHERE e.email = :email", Employee.class)
+                                     .setParameter("email", email)
+                                     .getResultList();
+        return employees.isEmpty() ? null : employees.get(0);
+    }
 }
