@@ -4,6 +4,7 @@ import com.example.pajproject.model.Role;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
 
@@ -18,8 +19,17 @@ public class RoleService {
         return em.createQuery("SELECT r FROM Role r", Role.class).getResultList();
     }
 
-    public Role getRoleById(Long roleId) {
-        return em.find(Role.class, roleId);
+    public Role getRoleById(Long id) {
+        System.out.println("RoleService.getRoleById: " + id);
+        try {
+            return em.find(Role.class, id);
+        } catch (NoResultException e) {
+            System.err.println("No Role found with ID: " + id);
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error retrieving Role with ID: " + id + " - " + e.getMessage());
+            return null;
+        }
     }
 
     public Role createRole(Role role) {

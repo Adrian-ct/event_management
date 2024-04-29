@@ -17,20 +17,20 @@ public class AuthController {
             .withIssuer(ISSUER)
             .build();
 
-    public static String getUsernameClaim(String token) {
+    public static String getIdClaim(String token) {
         try {
             DecodedJWT decodedJWT = verifier.verify(token);
-            return decodedJWT.getClaim("username").asString();
+            return decodedJWT.getClaim("id").asString();
         } catch (JWTVerificationException e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
 
-    public static String createJWT(String username, long ttlMillis) {
+    public static String createJWT(Long id, long ttlMillis) {
         return JWT.create()
                 .withIssuer(ISSUER)
-                .withClaim("username", username)
+                .withClaim("id", id)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ttlMillis))
                 .withJWTId(UUID.randomUUID().toString())

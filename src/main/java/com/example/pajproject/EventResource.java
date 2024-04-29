@@ -3,6 +3,7 @@ package com.example.pajproject;
 import com.example.pajproject.EJB.EventService;
 import com.example.pajproject.EJB.OrganizationService;
 import com.example.pajproject.EJB.StatusService;
+import com.example.pajproject.filter.RequireJWTAuthentication;
 import com.example.pajproject.model.Event;
 import com.example.pajproject.model.Organization;
 import com.example.pajproject.model.Status;
@@ -12,6 +13,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+
+
+//Authorization: Use the @RolesAllowed annotation on your resource methods to restrict access based on user roles.
+//You'll need to set up a SecurityContext in your application to hold the authenticated user's information.
 
 @Path("/event")
 public class EventResource {
@@ -26,6 +31,7 @@ public class EventResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequireJWTAuthentication
     public Response createEvent(Event event) {
         Organization organization = organizationService.getOrganization(event.getOrganizerId());
         event.setOrganizer(organization);
@@ -39,6 +45,7 @@ public class EventResource {
 
     @GET
     @Path("/{id}")
+    @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
     public Response getEvent(@PathParam("id") Long id) {
         Event event = eventService.getEvent(id);
@@ -46,6 +53,7 @@ public class EventResource {
     }
 
     @GET
+    @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllEvents() {
         List<Event> events = eventService.getAllEvents();
@@ -54,6 +62,7 @@ public class EventResource {
 
     @PUT
     @Path("/{id}")
+    @RequireJWTAuthentication
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEvent(@PathParam("id") Long id, Event event) {
         // Write in the console the id of the event
@@ -81,6 +90,7 @@ public class EventResource {
 
     @DELETE
     @Path("/{id}")
+    @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEvent(@PathParam("id") Long id) {
         boolean isDeleted = eventService.deleteEvent(id);

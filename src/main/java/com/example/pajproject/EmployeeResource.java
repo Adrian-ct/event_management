@@ -1,6 +1,7 @@
 package com.example.pajproject;
 
 import com.example.pajproject.EJB.EmployeeService;
+import com.example.pajproject.filter.RequireJWTAuthentication;
 import com.example.pajproject.model.Employee;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
@@ -15,6 +16,7 @@ public class EmployeeResource {
     private EmployeeService employeeService;
 
     @POST
+    @RequireJWTAuthentication
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEmployee(Employee employee) {
         employeeService.createEmployee(employee);
@@ -30,6 +32,7 @@ public class EmployeeResource {
     }
 
     @GET
+    @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllEmployees() {
         List<Employee> employees = employeeService.getAllEmployees();
@@ -38,6 +41,7 @@ public class EmployeeResource {
 
     @PUT
     @Path("/{id}")
+    @RequireJWTAuthentication
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEmployee(@PathParam("id") Long id, Employee employee) {
         employeeService.updateEmployee(employee);
@@ -46,6 +50,7 @@ public class EmployeeResource {
 
     @DELETE
     @Path("/{id}")
+    @RequireJWTAuthentication
     public Response deleteEmployee(@PathParam("id") Long id) {
         employeeService.deleteEmployee(id);
         return Response.ok().build();
