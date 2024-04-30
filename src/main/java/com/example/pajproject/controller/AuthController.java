@@ -17,10 +17,10 @@ public class AuthController {
             .withIssuer(ISSUER)
             .build();
 
-    public static String getIdClaim(String token) {
+    public static Long getIdClaim(String token) {
         try {
             DecodedJWT decodedJWT = verifier.verify(token);
-            return decodedJWT.getClaim("id").asString();
+            return decodedJWT.getClaim("id").asLong();
         } catch (JWTVerificationException e) {
             System.out.println(e.getMessage());
             return null;

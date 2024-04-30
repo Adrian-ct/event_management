@@ -6,10 +6,9 @@ import com.example.pajproject.EJB.RoleService;
 import com.example.pajproject.controller.AuthController;
 import com.example.pajproject.model.Employee;
 import jakarta.ejb.EJB;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -47,7 +46,7 @@ public class AuthResource {
                     .build();
         }
 
-        String token = AuthController.createJWT(user.getId(), TimeUnit.DAYS.toMillis(1));
+        String token = AuthController.createJWT(employee.getId(), TimeUnit.DAYS.toMillis(1));
 
         return Response
                 .status(Response.Status.OK)
@@ -96,5 +95,29 @@ public class AuthResource {
                 .status(Response.Status.CREATED)
                 .entity(token)
                 .build();
+    }
+
+    @GET
+    @Path("/user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUser(@Context HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("No header").build();
+        }
+
+        String token = authorizationHeader.substring("Bearer".length()).trim();
+        Long userId = AuthController.getIdClaim(token);
+        if(userId == null){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid token" + token).build();
+        }
+
+        Employee employee = employeeService.getEmployee(userId);
+        if(employee == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok().entity(employee).build();
     }
 }
