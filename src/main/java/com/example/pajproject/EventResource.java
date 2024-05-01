@@ -1,17 +1,15 @@
 package com.example.pajproject;
 
-import com.example.pajproject.EJB.EventService;
-import com.example.pajproject.EJB.OrganizationService;
-import com.example.pajproject.EJB.StatusService;
+import DTO.EventAttendance;
+import com.example.pajproject.EJB.*;
+import com.example.pajproject.controller.AuthController;
 import com.example.pajproject.filter.RequireJWTAuthentication;
-import com.example.pajproject.model.Event;
-import com.example.pajproject.model.Organization;
-import com.example.pajproject.model.Status;
+import com.example.pajproject.model.*;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,6 +26,12 @@ public class EventResource {
 
     @EJB
     private StatusService statusService;
+
+    @EJB
+    private EmployeeService employeeService;
+
+    @EJB
+    private AttendanceService attendanceService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -55,9 +59,32 @@ public class EventResource {
     @GET
     @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllEvents() {
+    public Response getAllEvents(@Context HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.substring("Bearer".length()).trim();
+        Long userId = AuthController.getIdClaim(token);
+
+        if(userId == null){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid token" + token).build();
+        }
+
+        Employee employee = employeeService.getEmployee(userId);
+
+        if(employee == null){
+            return Response.status(Response.Status.NOT_FOUND).entity("Employee not found").build();
+        }
+
         List<Event> events = eventService.getAllEvents();
-        return Response.ok(events).build();
+        List<EventAttendance> eventAttendances = new ArrayList<>();
+
+        for (Event event : events) {
+            EventAttendance eventAttendance = new EventAttendance();
+            eventAttendance.setEvent(event);
+            eventAttendance.setAttending(attendanceService.getUserAttendance(userId, event.getId()));
+            eventAttendances.add(eventAttendance);
+        }
+
+        return Response.ok(eventAttendances).build();
     }
 
     @PUT
@@ -100,5 +127,73 @@ public class EventResource {
             return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
+    }
+
+    @POST
+    @Path("/attend/{id}")
+    @RequireJWTAuthentication
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response attendEvent(@PathParam("id") Long id, Employee employee) {
+        Event existingEvent = eventService.getEvent(id);
+        boolean attendanceStatus = false;
+
+        if(existingEvent == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Event not found")
+                    .build();
+        }
+
+        Employee existingEmployee = employeeService.getEmployee(employee.getId());
+        if(existingEmployee == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Employee not found")
+                    .build();
+        }
+
+        if(! attendanceService.createAttendance(new Attendance(existingEmployee.getId(), existingEvent.getId()))){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Attendance record already exists")
+                    .build();
+        }
+
+        return Response.ok().entity("Attendance created").build();
+    }
+
+    @DELETE
+    @Path("/attend/{id}")
+    @RequireJWTAuthentication
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cancelAttendance(@PathParam("id") Long id, @Context HttpHeaders headers) {
+        Event existingEvent = eventService.getEvent(id);
+
+        if(existingEvent == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Event not found")
+                    .build();
+        }
+
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.substring("Bearer".length()).trim();
+        Long userId = AuthController.getIdClaim(token);
+
+        if(userId == null){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid token" + token).build();
+        }
+
+        Employee existingEmployee = employeeService.getEmployee(userId);
+
+        if (existingEmployee == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Employee not found")
+                    .build();
+        }
+
+        if( !attendanceService.deleteAttendance(existingEmployee, existingEvent)){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Error deleting Attendance")
+                    .build();
+        }
+        return Response.ok().entity("Attendance deleted").build();
     }
 }

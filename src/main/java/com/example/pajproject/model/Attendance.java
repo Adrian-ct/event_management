@@ -4,52 +4,36 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "attendance")
+@IdClass(AttendanceId.class)
 public class Attendance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long eventId;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @Id
+    private Long employeeId;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
-
-    @Column(name = "attendance_status", length = 20)
-    private String attendanceStatus;
-
-    public Long getId() {
-        return id;
+    public Attendance(Long employeeId, Long eventId) {
+        this.employeeId = employeeId;
+        this.eventId = eventId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Attendance() {
     }
 
-    public Event getEvent() {
-        return event;
+    public Long getEventId() {
+        return eventId;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
     }
 
-    public Employee getEmployee() {
-        return employee;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
-    public String getAttendanceStatus() {
-        return attendanceStatus;
-    }
-
-    public void setAttendanceStatus(String attendanceStatus) {
-        this.attendanceStatus = attendanceStatus;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 }
