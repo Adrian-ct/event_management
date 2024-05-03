@@ -5,6 +5,7 @@ import com.example.pajproject.EJB.OrganizationService;
 import com.example.pajproject.EJB.RoleService;
 import com.example.pajproject.controller.AuthController;
 import com.example.pajproject.model.Employee;
+import com.example.pajproject.model.Role;
 import jakarta.ejb.EJB;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -46,7 +47,7 @@ public class AuthResource {
                     .build();
         }
 
-        String token = AuthController.createJWT(employee.getId(), TimeUnit.DAYS.toMillis(1));
+        String token = AuthController.createJWT(employee.getId(),employee.getRole().getName(), TimeUnit.DAYS.toMillis(1));
 
         return Response
                 .status(Response.Status.OK)
@@ -83,7 +84,7 @@ public class AuthResource {
                     .build();
         }
 
-        String token = AuthController.createJWT(employee.getId(), TimeUnit.DAYS.toMillis(1));
+        String token = AuthController.createJWT(employee.getId(), employee.getRole().getName(), TimeUnit.DAYS.toMillis(1));
 
         if(token == null){
             return Response

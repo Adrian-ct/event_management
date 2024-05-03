@@ -12,10 +12,6 @@ import jakarta.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-//Authorization: Use the @RolesAllowed annotation on your resource methods to restrict access based on user roles.
-//You'll need to set up a SecurityContext in your application to hold the authenticated user's information.
-
 @Path("/event")
 public class EventResource {
     @EJB
@@ -35,7 +31,7 @@ public class EventResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @RequireJWTAuthentication
+    @RequireJWTAuthentication(Permissions = "admin")
     public Response createEvent(Event event) {
         Organization organization = organizationService.getOrganization(event.getOrganizerId());
         event.setOrganizer(organization);
@@ -89,7 +85,7 @@ public class EventResource {
 
     @PUT
     @Path("/{id}")
-    @RequireJWTAuthentication
+    @RequireJWTAuthentication(Permissions = "admin")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEvent(@PathParam("id") Long id, Event event) {
         // Write in the console the id of the event
@@ -115,9 +111,10 @@ public class EventResource {
         return Response.ok(updatedEvent).build();
     }
 
+
     @DELETE
     @Path("/{id}")
-    @RequireJWTAuthentication
+    @RequireJWTAuthentication(Permissions = "admin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEvent(@PathParam("id") Long id) {
         boolean isDeleted = eventService.deleteEvent(id);

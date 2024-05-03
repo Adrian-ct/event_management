@@ -27,10 +27,21 @@ public class AuthController {
         }
     }
 
-    public static String createJWT(Long id, long ttlMillis) {
+    public static String getRoleClaim(String token) {
+        try {
+            DecodedJWT decodedJWT = verifier.verify(token);
+            return decodedJWT.getClaim("role").asString();
+        } catch (JWTVerificationException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public static String createJWT(Long id,String role, long ttlMillis) {
         return JWT.create()
                 .withIssuer(ISSUER)
                 .withClaim("id", id)
+                .withClaim("role", role)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ttlMillis))
                 .withJWTId(UUID.randomUUID().toString())

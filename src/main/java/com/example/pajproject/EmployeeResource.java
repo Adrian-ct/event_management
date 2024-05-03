@@ -25,6 +25,7 @@ public class EmployeeResource {
 
     @GET
     @Path("/{id}")
+    @RequireJWTAuthentication
     @Produces(MediaType.APPLICATION_JSON)
     public Response getEmployee(@PathParam("id") Long id) {
         Employee employee = employeeService.getEmployee(id);
