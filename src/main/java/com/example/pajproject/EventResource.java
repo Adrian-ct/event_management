@@ -1,6 +1,6 @@
 package com.example.pajproject;
 
-import DTO.EventAttendance;
+import com.example.pajproject.DTO.EventAttendance;
 import com.example.pajproject.EJB.*;
 import com.example.pajproject.controller.AuthController;
 import com.example.pajproject.filter.RequireJWTAuthentication;

@@ -1,4 +1,4 @@
-package DTO;
+package com.example.pajproject.DTO;
 
 import com.example.pajproject.model.Event;
 

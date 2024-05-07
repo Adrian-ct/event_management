@@ -121,4 +121,16 @@ public class AuthResource {
 
         return Response.ok().entity(employee).build();
     }
+
+    public void setEmployeeService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+
+    public void setOrganizationService(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
+
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
+    }
 }
