@@ -33,6 +33,15 @@ public class EventResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @RequireJWTAuthentication(Permissions = "admin")
     public Response createEvent(Event event) {
+        if(event == null)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
+        if(event.getId() != null)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
+        if(event.getOrganizerId() == null)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
         Organization organization = organizationService.getOrganization(event.getOrganizerId());
         event.setOrganizer(organization);
 
@@ -49,6 +58,10 @@ public class EventResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getEvent(@PathParam("id") Long id) {
         Event event = eventService.getEvent(id);
+
+        if(event == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("Event not found").build();
+
         return Response.ok(event).build();
     }
 
@@ -88,8 +101,6 @@ public class EventResource {
     @RequireJWTAuthentication(Permissions = "admin")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEvent(@PathParam("id") Long id, Event event) {
-        // Write in the console the id of the event
-        System.out.println("Event id: " + id);
         Event existingEvent = eventService.getEvent(id);
         if(existingEvent == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -117,11 +128,19 @@ public class EventResource {
     @RequireJWTAuthentication(Permissions = "admin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEvent(@PathParam("id") Long id) {
+
+        if(eventService.getEvent(id) == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Event not found")
+                    .build();
+        }
+
         boolean isDeleted = eventService.deleteEvent(id);
         if (isDeleted) {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Event not found")
                     .build();
         }
     }
@@ -131,8 +150,9 @@ public class EventResource {
     @RequireJWTAuthentication
     @Consumes(MediaType.APPLICATION_JSON)
     public Response attendEvent(@PathParam("id") Long id, Employee employee) {
-        Event existingEvent = eventService.getEvent(id);
         boolean attendanceStatus = false;
+
+        Event existingEvent = eventService.getEvent(id);
 
         if(existingEvent == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -192,5 +212,25 @@ public class EventResource {
                     .build();
         }
         return Response.ok().entity("Attendance deleted").build();
+    }
+
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    public void setOrganizationService(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
+
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
+    }
+
+    public void setEmployeeService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+
+    public void setAttendanceService(AttendanceService attendanceService) {
+        this.attendanceService = attendanceService;
     }
 }
