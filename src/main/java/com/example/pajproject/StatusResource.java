@@ -63,4 +63,8 @@ public class StatusResource {
 //                    .build();
 //        }
 //    }
+
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
+    }
 }

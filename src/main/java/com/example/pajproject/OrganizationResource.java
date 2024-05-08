@@ -59,4 +59,8 @@ public class OrganizationResource {
 //                    .build();
 //        }
 //    }
+
+    public void setOrganizationService(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
 }

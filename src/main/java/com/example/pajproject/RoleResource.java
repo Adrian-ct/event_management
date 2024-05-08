@@ -63,4 +63,8 @@ public class RoleResource {
 //                    .build();
 //        }
 //    }
+
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
+    }
 }
