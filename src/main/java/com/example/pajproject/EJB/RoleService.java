@@ -1,6 +1,9 @@
 package com.example.pajproject.EJB;
 
+import com.example.pajproject.DAO.OrganizationDAO;
+import com.example.pajproject.DAO.RoleDAO;
 import com.example.pajproject.model.Role;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -14,44 +17,36 @@ public class RoleService {
 
     @PersistenceContext(unitName = "default")
     private EntityManager em;
+    private RoleDAO roleDAO;
+
+    @PostConstruct
+    public void init() {
+        roleDAO = new RoleDAO(em);
+    }
 
     public List<Role> getAllRoles() {
-        return em.createQuery("SELECT r FROM Role r", Role.class).getResultList();
+        return roleDAO.findAll();
     }
 
     public Role getRoleById(Long id) {
-        System.out.println("RoleService.getRoleById: " + id);
-        try {
-            return em.find(Role.class, id);
-        } catch (NoResultException e) {
-            System.err.println("No Role found with ID: " + id);
-            return null;
-        } catch (Exception e) {
-            System.err.println("Error retrieving Role with ID: " + id + " - " + e.getMessage());
-            return null;
-        }
+        return roleDAO.findById(id);
     }
 
     public Role createRole(Role role) {
-        em.persist(role);
-        return role;
+        return roleDAO.create(role);
     }
 
     public Role updateRole(Role role) {
-        Role existingRole = em.find(Role.class, role.getId());
-        if (existingRole == null) {
-            return null;
-        }
-        existingRole.setName(role.getName());
-        return existingRole;
+        return roleDAO.update(role);
     }
 
     public boolean deleteRole(Long roleId) {
-        Role role = em.find(Role.class, roleId);
-        if (role == null) {
+        try {
+            roleDAO.delete(roleId);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error deleting Role: " + e.getMessage());
             return false;
         }
-        em.remove(role);
-        return true;
     }
 }

@@ -1,5 +1,8 @@
 package com.example.pajproject.EJB;
+import com.example.pajproject.DAO.EventDAO;
+import com.example.pajproject.DAO.OrganizationDAO;
 import com.example.pajproject.model.Organization;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -13,34 +16,36 @@ public class OrganizationService {
 
     @PersistenceContext(unitName = "default")
     private EntityManager em;
+    private OrganizationDAO organizationDAO;
+
+    @PostConstruct
+    public void init() {
+        organizationDAO = new OrganizationDAO(em);
+    }
 
     public List<Organization> getAllOrganizations() {
-        return em.createQuery("SELECT o FROM Organization o", Organization.class).getResultList();
+    return organizationDAO.findAll();
     }
 
     public Organization createOrganization(Organization organization) {
-        em.persist(organization);
-        return organization;
+        return organizationDAO.create(organization);
     }
 
     public Organization updateOrganization(Organization organization) {
-        Organization existingOrganization = em.find(Organization.class, organization.getId());
-        if (existingOrganization == null) {
-            return null;
-        }
-        return em.merge(organization);
+        return organizationDAO.update(organization);
     }
 
     public boolean deleteOrganization(Long id) {
-        Organization organization = em.find(Organization.class, id);
-        if (organization == null) {
+        try {
+            organizationDAO.delete(id);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error deleting Organization: " + e.getMessage());
             return false;
         }
-        em.remove(organization);
-        return true;
     }
 
     public Organization getOrganization(Long id) {
-        return em.find(Organization.class, id);
+        return organizationDAO.findById(id);
     }
 }

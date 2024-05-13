@@ -1,6 +1,8 @@
 package com.example.pajproject.EJB;
 
+import com.example.pajproject.DAO.EventDAO;
 import com.example.pajproject.model.Event;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -12,39 +14,40 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class EventService {
-
     @PersistenceContext(unitName = "default")
     private EntityManager em;
 
+    private EventDAO eventDAO;
+
+    @PostConstruct
+    public void init() {
+        eventDAO = new EventDAO(em);
+    }
+
     public List<Event> getAllEvents() {
-        return em.createQuery("SELECT e FROM Event e", Event.class).getResultList();
+        return eventDAO.findAll();
     }
 
     public Event createEvent(Event event) {
-        Date now = new Date();
-        event.setCreatedAt(now);
-        event.setChangedAt(now);
-        em.persist(event);
-        return event;
+        return eventDAO.create(event);
     }
 
     public Event getEvent(Long eventId) {
-        return em.find(Event.class, eventId);
+        return eventDAO.findById(eventId);
     }
 
     public Event updateEvent(Event event) {
-        event.setChangedAt(new Date());
-        em.merge(event);
-        return event;
+        return eventDAO.update(event);
     }
 
     public boolean deleteEvent(Long eventId) {
-        Event event = em.find(Event.class, eventId);
-        if (event != null) {
-            em.remove(event);
+        try {
+            eventDAO.delete(eventId);
             return true;
+        } catch (Exception e) {
+            System.err.println("Error deleting Event: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 }
 

@@ -1,9 +1,12 @@
 package com.example.pajproject.EJB;
 
+import com.example.pajproject.DAO.AttendanceDAO;
+import com.example.pajproject.DAO.EventDAO;
 import com.example.pajproject.model.Attendance;
 import com.example.pajproject.model.AttendanceId;
 import com.example.pajproject.model.Employee;
 import com.example.pajproject.model.Event;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -17,33 +20,24 @@ public class AttendanceService {
     @PersistenceContext(unitName = "default")
     private EntityManager em;
 
+    private AttendanceDAO attendanceDAO;
+
+    @PostConstruct
+    public void init() {
+        attendanceDAO = new AttendanceDAO(em);
+    }
+
     public List<Attendance> getAttendanceByEvent(Long eventId) {
-        return em.createQuery("SELECT a FROM Attendance a WHERE a.eventId = :eventId", Attendance.class)
-                .setParameter("eventId", eventId)
-                .getResultList();
+        return attendanceDAO.getAttendanceByEvent(eventId);
     }
 
     public boolean getUserAttendance(Long employeeId, Long eventId) {
-        AttendanceId attendanceId = new AttendanceId(employeeId, eventId);
-        Attendance attendance = em.find(Attendance.class, attendanceId);
-
-        if (attendance == null) {
-            System.err.println("No attendance found");
-            return false;
-        }
-
-        return true;
+        return attendanceDAO.getUserAttendance(employeeId, eventId);
     }
 
     public boolean createAttendance(Attendance attendance) {
-
-        if (getUserAttendance(attendance.getEventId(), attendance.getEmployeeId())) {
-            System.err.println("Error creating Attendance: Attendance record already exists");
-            return false;
-        }
-
         try {
-            em.persist(attendance);
+            attendanceDAO.create(attendance);
             return true;
         } catch (Exception e) {
             System.err.println("Error creating Attendance: " + e.getMessage());
@@ -52,24 +46,15 @@ public class AttendanceService {
     }
 
     public Attendance updateAttendance(Attendance attendance) {
-        em.merge(attendance);
-        return attendance;
+        return attendanceDAO.update(attendance);
     }
 
     public boolean deleteAttendance(Employee employee, Event event) {
-        AttendanceId attendanceId = new AttendanceId(employee.getId(), event.getId());
-        Attendance attendance = em.find(Attendance.class, attendanceId);
-
-        if (attendance == null) {
-            System.err.println("No attendance found");
-            return false;
-        }
-
-        System.out.println("Attendance Info:" + attendance.getEmployeeId() + " " + attendance.getEventId());
-        try {
-            em.remove(attendance);
+        try{
+            attendanceDAO.delete(employee, event);
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e){
             System.err.println("Error deleting Attendance: " + e.getMessage());
             return false;
         }
